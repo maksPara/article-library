@@ -1,0 +1,22 @@
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Tests
+.pytest_cache/
+
+# Local secrets
+.env
+
+# Local database
+*.db
+*.sqlite3
+
+# macOS
+.DS_Store
+
+# IDE settings
+.idea/
