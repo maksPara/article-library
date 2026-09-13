@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import HttpUrl
+from trafilatura import fetch_url, bare_extraction
 
 from database import get_articles, initialize_database, save_article
 
@@ -26,6 +27,8 @@ def index(request: Request, status: str | None = None):
     messages = {
         "added": "Article added successfully.",
         "duplicate": "Article already exists.",
+        "download_failed": "Article download failed.",
+        "extraction_failed": "Article extraction failed.",
     }
 
     return templates.TemplateResponse(
@@ -35,7 +38,31 @@ def index(request: Request, status: str | None = None):
 
 @app.post("/articles", response_class=HTMLResponse)
 def add_article(url: Annotated[HttpUrl, Form()]):
-    created = save_article(url=str(url), title="Untitled article")
+    article_url = str(url)
+    downloaded = fetch_url(article_url)
+
+    if downloaded is None:
+        return RedirectResponse(
+            url="/?status=download_failed",
+            status_code=303,
+        )
+
+    article = bare_extraction(
+        downloaded,
+        url=article_url,
+        with_metadata=True,
+        include_comments=False,
+    )
+
+    if article is None:
+        return RedirectResponse(
+            url="/?status=extraction_failed",
+            status_code=303,
+        )
+
+    title = article.title or "Untitled article"
+
+    created = save_article(url=article_url, title=title)
 
     if not created:
         return RedirectResponse(
