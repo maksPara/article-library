@@ -3,6 +3,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+
 @app.get("/")
 def index():
     return {"message": "My article library"}
