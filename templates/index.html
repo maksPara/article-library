@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Article Library</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+    <h1>Welcome to Article Library!</h1>
+
+    <form action="/articles" method="post">
+        <label for="url">Article URL</label>
+        <input
+            type="url"
+            id="url"
+            name="url"
+            placeholder="https://example.com/article"
+            required
+        >
+        <button type="submit">Add article</button>
+    </form>
+    {% if message %}
+        <p role="status">{{ message }}</p>
+    {% endif %}
+
+    <h2>Saved articles</h2>
+
+    {% if articles %}
+        <ul>
+            {% for article in articles %}
+                <li>
+                    <a href="{{ article['url'] }}">
+                        {{ article['title'] }}
+                    </a>
+                    <p>{{ article['url'] }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No articles yet. Add your first one above.</p>
+    {% endif %}
+</body>
+</html>
