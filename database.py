@@ -17,7 +17,7 @@ def initialize_database():
         connection.commit()
 
 
-def save_article(url, title):
+def add_article(url, title):
     with closing(sqlite3.connect(DATABASE_PATH)) as connection:
         cursor = connection.execute(
             """
