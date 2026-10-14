@@ -10,8 +10,9 @@ from pydantic import HttpUrl
 from trafilatura import fetch_url, bare_extraction
 
 from database import get_articles, initialize_database, insert_article
-from messages import STATUS_MESSAGES
+from messages import get_message
 from responses import redirect_with_status
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -29,7 +30,10 @@ def index(request: Request, status: str | None = None):
     return templates.TemplateResponse(
         request,
         "index.html",
-        context={"articles": get_articles(), "message": STATUS_MESSAGES.get(status)},
+        context={
+            "articles": get_articles(),
+            "message": get_message(status) if status else None,
+        },
     )
 
 
