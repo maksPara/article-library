@@ -20,3 +20,6 @@ __pycache__/
 
 # IDE settings
 .idea/
+
+# Personal list of articles
+articles.txt
