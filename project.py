@@ -11,7 +11,6 @@ from trafilatura import fetch_url, bare_extraction
 
 from database import get_articles, initialize_database, insert_article
 from messages import get_message
-from responses import redirect_with_status
 
 
 @asynccontextmanager
@@ -23,6 +22,10 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+
+def redirect_with_status(status: str) -> RedirectResponse:
+    return RedirectResponse(url=f"/?status={status}", status_code=303)
 
 
 @app.get("/", response_class=HTMLResponse)
