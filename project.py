@@ -9,13 +9,15 @@ from fastapi.templating import Jinja2Templates
 from pydantic import HttpUrl
 from trafilatura import fetch_url, bare_extraction
 
-from database import get_articles, initialize_database, save_article
-
+from database import get_articles, initialize_database, insert_article
+from messages import STATUS_MESSAGES
+from responses import redirect_with_status
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     initialize_database()
     yield
+
 
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -24,15 +26,10 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request, status: str | None = None):
-    messages = {
-        "added": "Article added successfully.",
-        "duplicate": "Article already exists.",
-        "download_failed": "Article download failed.",
-        "extraction_failed": "Article extraction failed.",
-    }
-
     return templates.TemplateResponse(
-        request, "index.html", context={"articles": get_articles(), "message": messages.get(status)}
+        request,
+        "index.html",
+        context={"articles": get_articles(), "message": STATUS_MESSAGES.get(status)},
     )
 
 
@@ -42,10 +39,7 @@ def add_article(url: Annotated[HttpUrl, Form()]):
     downloaded = fetch_url(article_url)
 
     if downloaded is None:
-        return RedirectResponse(
-            url="/?status=download_failed",
-            status_code=303,
-        )
+        return redirect_with_status("download_failed")
 
     article = bare_extraction(
         downloaded,
@@ -55,22 +49,16 @@ def add_article(url: Annotated[HttpUrl, Form()]):
     )
 
     if article is None:
-        return RedirectResponse(
-            url="/?status=extraction_failed",
-            status_code=303,
-        )
+        return redirect_with_status("extraction_failed")
 
     title = article.title or "Untitled article"
 
-    created = save_article(url=article_url, title=title)
+    created = insert_article(url=article_url, title=title)
 
     if not created:
-        return RedirectResponse(
-            url="/?status=duplicate",
-            status_code=303,
-        )
+        return redirect_with_status("duplicate")
 
-    return RedirectResponse(url="/?status=added", status_code=303)
+    return redirect_with_status("added")
 
 
 def main():

@@ -1,0 +1,6 @@
+STATUS_MESSAGES = {
+    "added": "Article added successfully.",
+    "duplicate": "Article already exists.",
+    "download_failed": "Article download failed.",
+    "extraction_failed": "Article extraction failed.",
+}
