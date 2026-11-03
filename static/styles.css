@@ -4,7 +4,7 @@
 
 body {
     margin: 0 auto;
-    padding: 48px 20px;
+    padding: 48px 24px;
     max-width: 720px;
     min-height: 100vh;
     background-color: #121212;
@@ -20,7 +20,12 @@ h1 {
 }
 
 h2 {
-    margin-top: 48px;
+    margin-top: 36px;
+}
+
+ul {
+    list-style: none;
+    padding: 0 0 0 24px;
 }
 
 .form-add-article {
