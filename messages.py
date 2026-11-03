@@ -3,6 +3,8 @@ STATUS_MESSAGES = {
     "duplicate": "Article already exists.",
     "download_failed": "Article download failed.",
     "extraction_failed": "Article extraction failed.",
+    "deleted": "Article deleted successfully.",
+    "not_deleted": "Article deletion failed."
 }
 
 

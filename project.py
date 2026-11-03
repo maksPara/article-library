@@ -9,7 +9,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import HttpUrl
 from trafilatura import fetch_url, bare_extraction
 
-from database import get_articles, initialize_database, insert_article
+from database import get_articles, initialize_database, insert_article, delete_article
 from messages import get_message
 
 
@@ -41,7 +41,7 @@ def index(request: Request, status: str | None = None):
 
 
 @app.post("/articles", response_class=HTMLResponse)
-def add_article(url: Annotated[HttpUrl, Form()]):
+def add_article_endpoint(url: Annotated[HttpUrl, Form()]):
     article_url = str(url)
     downloaded = fetch_url(article_url)
 
@@ -66,6 +66,16 @@ def add_article(url: Annotated[HttpUrl, Form()]):
         return redirect_with_status("duplicate")
 
     return redirect_with_status("added")
+
+
+@app.post("/articles/{article_id}/delete", response_class=HTMLResponse)
+def delete_article_endpoint(article_id: int):
+    deleted = delete_article(article_id)
+
+    status = "deleted" if deleted else "not_deleted"
+
+    return redirect_with_status(status)
+
 
 
 def main():

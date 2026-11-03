@@ -45,3 +45,11 @@ def get_articles():
         return connection.execute(
             "SELECT id, url, title FROM articles ORDER BY id DESC"
         ).fetchall()
+
+
+def delete_article(article_id):
+    with get_connection() as connection:
+        cursor = connection.execute("""DELETE FROM articles WHERE id = ?""", (article_id,))
+        connection.commit()
+
+        return cursor.rowcount > 0
